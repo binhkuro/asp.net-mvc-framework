@@ -1,0 +1,149 @@
+﻿@using FinalEcormer2023.Models;
+@model IEnumerable<FinalEcormer2023.Models.Category>
+
+@{
+    ViewData["Title"] = "Category";
+
+    Pager pager = new Pager();
+    int pageNo = 0;
+
+    if (ViewBag.Pager != null)
+    {
+        pager = ViewBag.Pager;
+        pageNo = pager.CurrentPage;
+    }
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+
+<link href="~/css/modal.css" rel="stylesheet" />
+
+@section MainContent {
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4 mb-4">Category Management</h1>
+
+            <div id="notification" style="display: none;">
+                <div class="alert" role="alert"></div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    List of Categories
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <button id="addCategoryButton" class="btn btn-success btn-lg" style="margin-top: 15px; margin-left: 20px;" data-toggle="modal" data-target="#addCategoryModal">Add Category</button>
+                    </div>
+                    <div class="col-md-6">
+                        <vc:search-bar Search-Pager="@ViewBag.SearchPager"></vc:search-bar>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th style="text-align: center; vertical-align: middle;">@Html.DisplayNameFor(model => model.Id)</th>
+                                    <th style="text-align: center; vertical-align: middle;">@Html.DisplayNameFor(model => model.Name)</th>
+                                    <th style="text-align: center; vertical-align: middle;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td style="text-align: center; vertical-align: middle;">@Html.DisplayFor(modelItem => item.Id)</td>
+                                        <td style="text-align: center; vertical-align: middle;">@Html.DisplayFor(modelItem => item.Name)</td>
+                                        <td style="text-align: center; vertical-align: middle;">
+                                            <button class="btn btn-secondary" onclick="location.href='@Url.Action("ProductByCategory", "Admin", new { id = item.Id })'"><i class="fa-solid fa-circle-info"></i></button>
+                                            <button class="btn btn-warning" data-toggle="modal" data-target="#updateCategoryModal" onclick="updateCategoryModal('@item.Id', '@item.Name')"><i class="fa-solid fa-pen"></i></button>                                            
+                                            <button class="btn btn-danger" data-toggle="modal" data-target="#deleteCategoryModal" onclick="document.getElementById('categoryIdInput2').value = '@item.Id'"><i class="fa-solid fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <vc:page-divide Page-Divide="@ViewBag.PageDivide">
+            </vc:page-divide>
+        </div>
+
+        <!-- Add modal -->
+        <div class="modal" id="addCategoryModal">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Add Category</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form asp-action="AddCategory" asp-controller="Admin" method="post">
+                            <div class="form-group">
+                                <label for="newCategoryName">Name:</label>
+                                <input type="text" id="newCategoryName" name="categoryName" placeholder="Category Name" class="form-control">
+                            </div>
+                            <div class="text-right">
+                                <button type="submit" class="btn btn-primary" id="saveNewCategoryButton">Save</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Update modal -->
+        <div class="modal" id="updateCategoryModal">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Update Category</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="updateCategoryForm" asp-action="UpdateCategory" asp-controller="Admin" method="post">
+                            <input type="hidden" id="categoryIdInput" name="categoryId" value="">
+                            <div class="form-group">
+                                <label for="updatedCategoryName">Name:</label>
+                                <input type="text" id="updatedCategoryName" name="updatedCategoryName" placeholder="Updated Category Name" class="form-control">
+                            </div>
+                            <div class="text-right">
+                                <button type="submit" class="btn btn-primary" id="saveUpdatedCategoryButton">Save</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete modal -->
+        <div class="modal" id="deleteCategoryModal">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirm Deletion</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete this category?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <form id="deleteCategoryForm" method="post" asp-controller="Admin" asp-action="DeleteCategory">
+                            <input type="hidden" id="categoryIdInput2" name="id" value="">
+                            <button type="submit" class="btn btn-danger" id="confirmDeleteButton">Delete</button>
+                        </form>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="~/js/category-management.js"></script>
+        <script src="~/js/preventreload.js"></script>
+
+    </main>
+}

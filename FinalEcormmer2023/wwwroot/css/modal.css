@@ -1,0 +1,91 @@
+﻿.modal {
+    display: none;
+    text-align: center;
+    padding: 0 !important;
+}
+
+    .modal.show {
+        display: block;
+    }
+
+.modal-dialog {
+    display: inline-block;
+    text-align: left;
+    vertical-align: middle;
+    max-width: 400px;
+    margin: 100px auto;
+}
+
+.modal-content {
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    border-bottom: none;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+    .modal-header .modal-title {
+        margin: 0;
+    }
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-footer {
+    border-top: none;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.btn {
+    border-radius: 5px;
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+/* Additional Styling for the labels and inputs */
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+/* Bo tròn khung nhập */
+input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 10px; /* Góc bo tròn */
+    transition: border-color 0.3s ease-in-out; /* Hiệu ứng khi hover */
+}
+
+    input[type="text"]::placeholder {
+        color: #ced4da; /* Màu placeholder */
+        opacity: 0.6; /* Độ mờ của placeholder */
+    }
+
+    /* Hiệu ứng khi hover vào khung nhập */
+    input[type="text"]:focus,
+    input[type="text"]:hover {
+        border-color: #6c757d; /* Màu viền khi hover */
+        outline: none; /* Loại bỏ đường viền khi focus */
+    }
+
+/* Hiệu ứng khi hover vào nút */
+.btn:hover {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: #ffffff;
+}

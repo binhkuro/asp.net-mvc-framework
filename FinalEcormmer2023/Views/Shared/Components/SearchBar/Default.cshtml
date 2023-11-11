@@ -1,0 +1,13 @@
+﻿@using FinalEcormer2023.Views.Shared.Components.SearchBar
+@model SPager
+
+<div class="container">
+    <div class="d-flex justify-content-end" style="margin-top: 15px">
+        <form asp-controller="@Model.Controller" asp-action="@Model.Action">
+            <div class="input-group">
+                <input class="form-control me-2" type="text" name="SearchText" value="@Model.SearchText" placeholder="Search Key" style="margin-right: 15px; width: 350px;">
+                <button class="btn btn-info" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,232 @@
+﻿@using FinalEcormer2023.Models;
+@model IEnumerable<FinalEcormer2023.Models.Product>
+
+@{
+    ViewData["Title"] = "Product";
+
+    Pager pager = new Pager();
+    int pageNo = 0;
+
+    if (ViewBag.Pager != null)
+    {
+        pager = ViewBag.Pager;
+        pageNo = pager.CurrentPage;
+    }
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+
+<link href="~/css/modal.css" rel="stylesheet" />
+
+@section MainContent {
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4 mb-4">Product Management</h1>
+
+            <div id="notification" style="display: none;">
+                <div class="alert" role="alert"></div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    List of Products
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <button id="addProductButton" class="btn btn-success btn-lg" style="margin-top: 15px; margin-left: 20px;" data-toggle="modal" data-target="#addProductModal">Add Product</button>
+                    </div>
+                    <div class="col-md-6">
+                        <vc:search-bar Search-Pager="@ViewBag.SearchPager"></vc:search-bar>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th style="text-align: center; vertical-align: middle;">@Html.DisplayNameFor(model => model.Id)</th>
+                                    <th style="text-align: center; vertical-align: middle;">Image</th>
+                                    <th style="text-align: center; vertical-align: middle;">@Html.DisplayNameFor(model => model.Name)</th>
+                                    <th style="text-align: center; vertical-align: middle;">@Html.DisplayNameFor(model => model.Color)</th>
+                                    <th style="text-align: center; vertical-align: middle;">@Html.DisplayNameFor(model => model.Description)</th>
+                                    <th style="text-align: center; vertical-align: middle;">@Html.DisplayNameFor(model => model.Price)</th>
+                                    <th style="text-align: center; vertical-align: middle;">Category</th>
+                                    <th style="text-align: center; vertical-align: middle;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td style="text-align: center; vertical-align: middle;">@Html.DisplayFor(modelItem => item.Id)</td>
+                                        <td style="text-align: center; vertical-align: middle;"><img src="@item.Url" alt="Image" width="100" height="100"></td>
+                                        <td style="text-align: center; vertical-align: middle;">@Html.DisplayFor(modelItem => item.Name)</td>
+                                        <td style="text-align: center; vertical-align: middle;">@Html.DisplayFor(modelItem => item.Color)</td>
+                                        <td style="text-align: center; vertical-align: middle;">@Html.DisplayFor(modelItem => item.Description)</td>
+                                        <td style="text-align: center; vertical-align: middle;">@Html.DisplayFor(modelItem => item.Price)</td>
+                                        <td style="text-align: center; vertical-align: middle;">@Html.DisplayFor(modelItem => item.category.Name)</td>
+                                        <td style="text-align: center; vertical-align: middle;">
+                                            <button class="btn btn-secondary" data-toggle="modal" data-target="#detailProductModal_@item.Id"><i class="fa-solid fa-circle-info"></i></button>
+                                            <button class="btn btn-warning" data-toggle="modal" data-target="#updateProductModal" onclick="updateProductModal('@item.Id', '@item.Name', '@item.Color', '@item.Description', '@item.Url', @item.Price, @item.CategoryId)"><i class="fa-solid fa-pen"></i></button>
+                                            <button class="btn btn-danger" data-toggle="modal" data-target="#deleteProductModal" onclick="document.getElementById('productId').value = '@item.Id'"><i class="fa-solid fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    <div class="modal fade" id="detailProductModal_@item.Id" tabindex="-1" role="dialog" aria-labelledby="detailProductModalLabel_@item.Id" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                                            <div class="modal-content" style="border: 2px solid #ccc; border-radius: 10px; box-shadow: 0px 0px 15px 0px #ccc;">
+                                                <div class="modal-header" style="background-color: #343a40; color: #fff;">
+                                                    <h5 class="modal-title" id="detailProductModalLabel_@item.Id">@item.Name</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #fff;">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body row">
+                                                    <div class="col-md-6" style="background-color: #f8f9fa; padding: 20px;">
+                                                        <img src="@item.Url" class="img-fluid" alt="Product Image">
+                                                    </div>
+                                                    <div class="col-md-6" style="padding: 20px; background-color: #fff; display: flex; flex-direction: column; justify-content: center;">
+                                                        <p style="text-align: center;"><strong>ID:</strong> @item.Id</p>
+                                                        <p style="text-align: center;"><strong>Color:</strong> @item.Color</p>
+                                                        <p style="text-align: center;"><strong>Description:</strong> @item.Description</p>
+                                                        <p style="text-align: center;"><strong>Price:</strong> @item.Price</p>
+                                                        <p style="text-align: center;"><strong>Category:</strong> @item.category.Name</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <vc:page-divide Page-Divide="@ViewBag.PageDivide">
+            </vc:page-divide>
+        </div>
+
+        <!-- Add modal -->
+        <div class="modal" id="addProductModal">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Add Product</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form asp-action="AddProduct" asp-controller="Admin" method="post">
+                            <div class="form-group">
+                                <label for="productName">Name:</label>
+                                <input type="text" id="productName" name="productName" placeholder="Product Name" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="productColor">Color:</label>
+                                <input type="text" id="productColor" name="productColor" placeholder="Product Color" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="productDescription">Description:</label>
+                                <input type="text" id="productDescription" name="productDescription" placeholder="Product Description" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="productUrl">Url:</label>
+                                <input type="text" id="productUrl" name="productUrl" placeholder="Product Url" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="productPrice">Price:</label>
+                                <input type="number" id="productPrice" name="productPrice" placeholder="Product Price" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="categoryId">Category:</label>
+                                <select id="categoryId" name="categoryId" class="form-control">
+                                    @foreach (var category in ViewBag.Categories as IEnumerable<FinalEcormer2023.Models.Category>)
+                                    {
+                                        <option value="@category.Id">@category.Name</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="text-right">
+                                <button type="submit" class="btn btn-primary" id="saveNewProductButton">Save</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Update modal -->
+        <div class="modal" id="updateProductModal">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Update Product</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="updateProductForm" method="post" asp-action="UpdateProduct" asp-controller="Admin">
+                            <input type="hidden" id="productIdInput" name="id" value="">
+                            <div class="form-group">
+                                <label for="newProductName">Name:</label>
+                                <input type="text" id="newProductName" name="newName" class="form-control" placeholder="Product Name">
+                            </div>
+                            <div class="form-group">
+                                <label for="newProductColor">Color:</label>
+                                <input type="text" id="newProductColor" name="newColor" class="form-control" placeholder="Product Color">
+                            </div>
+                            <div class="form-group">
+                                <label for="newProductDescription">Description:</label>
+                                <input type="text" id="newProductDescription" name="newDescription" class="form-control" placeholder="Product Description">
+                            </div>
+                            <div class="form-group">
+                                <label for="newProductUrl">Url:</label>
+                                <input type="text" id="newProductUrl" name="newUrl" class="form-control" placeholder="Product Url">
+                            </div>
+                            <div class="form-group">
+                                <label for="newProductPrice">Price:</label>
+                                <input type="number" id="newProductPrice" name="newPrice" class="form-control" placeholder="Product Price">
+                            </div>
+                            <div class="form-group">
+                                <label for="newProductCategoryId">Category Id:</label>
+                                <select id="newProductCategoryId" name="newCategoryId" class="form-control">
+                                    @foreach (var category in ViewBag.Categories as IEnumerable<FinalEcormer2023.Models.Category>)
+                                    {
+                                        <option value="@category.Id">@category.Name</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="text-right">
+                                <button type="submit" class="btn btn-primary" id="updateProductButton">Update</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete modal -->
+        <div class="modal" id="deleteProductModal">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirm Deletion</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete this product?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <form id="deleteProductForm" method="post" asp-controller="Admin" asp-action="DeleteProduct">
+                            <input type="hidden" id="productId" name="id" value="">
+                            <button type="submit" class="btn btn-danger" id="confirmDeleteButton">Delete</button>
+                        </form>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="~/js/product-management.js"></script>
+        <script src="~/js/preventreload.js"></script>
+    </main>
+}

@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\FinalEcormer2023.props" />
+</Project>
